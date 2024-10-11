@@ -6,7 +6,7 @@ class GraphIntegrator:
     """
     A class to integrate and manage graph data in a Neo4j database.
     """
-    def __init__(self, uri: str, username: str, password: str):
+    def __init__(self, uri: str, username: str, password: str, database: str):
         """
         Initializes the GraphIntegrator with database connection parameters.
         
@@ -18,6 +18,7 @@ class GraphIntegrator:
         self.uri = uri
         self.username = username
         self.password = password
+        self.database = database
         self.driver = self.connect()
 
     def connect(self):
@@ -37,7 +38,7 @@ class GraphIntegrator:
         Args:
         query (str): The Cypher query to run.
         """
-        session = self.driver.session()
+        session = self.driver.session(database=self.database)
         try:
             session.run(query)
         finally:
