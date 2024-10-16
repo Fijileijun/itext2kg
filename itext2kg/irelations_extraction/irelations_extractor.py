@@ -49,7 +49,7 @@ class iRelationsExtractor:
             ValueError: If relationship extraction fails after multiple attempts.
         """
         # we would not give the LLM complex data structure as context to avoid the hallucination as much as possible
-        entities_simplified = [(entity.name, entity.label) for entity in entities]
+        entities_simplified = [(entity.name, entity.label, entity.description) for entity in entities]
         formatted_context = f"context : --\n'{context}' \n entities :-- \n {entities_simplified}"
         IE_query = '''# Directives
                         - Extract relationships between the provided entities based on the context.
@@ -57,10 +57,11 @@ class iRelationsExtractor:
                         - Do not change the name or label of the provided entities list.
                         - Do not add any entity outside the provided list.
                         - Avoid reflexive relations.
+                        - relationship name 请使用中文.
                         '''
                         
         if isolated_entities_without_relations:
-            isolated_entities_without_relations_simplified = [(entity.name, entity.label) for entity in isolated_entities_without_relations]
+            isolated_entities_without_relations_simplified = [(entity.name, entity.label, entity.description) for entity in isolated_entities_without_relations]
             formatted_context = f"context :--\n'{context}'"
             IE_query = f'''
                     # Directives
@@ -94,8 +95,8 @@ class iRelationsExtractor:
         # -------- Verification of invented entities and matching to the closest ones from the input entities-------- #
         print("[INFO] Verification of invented entities")
         for relationship in relationships["relationships"]:
-            startEntity = Entity(label=relationship["startNode"]["label"], name = relationship["startNode"]["name"])
-            endEntity = Entity(label=relationship["endNode"]["label"], name = relationship["endNode"]["name"])
+            startEntity = Entity(label=relationship["startNode"]["label"], name = relationship["startNode"]["name"], description = relationship["startNode"]["description"])
+            endEntity = Entity(label=relationship["endNode"]["label"], name = relationship["endNode"]["name"], description = relationship["endNode"]["description"])
             
             startEntity.process()
             endEntity.process()

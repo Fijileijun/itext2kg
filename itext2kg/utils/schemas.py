@@ -46,11 +46,13 @@ class Article(BaseModel):
 # ---------------- Entities & Relationships Extraction --------------------------- #
 
 class Property(BaseModel):
-    name : str = Field("The name of the entity. An entity should encode ONE concept.")
-    
+    name : str = Field("The name of the entity in 中文. An entity should encode ONE concept.")
+
 class Entity(BaseModel):
     label : str = Field("The type or category of the entity, such as 'Process', 'Technique', 'Data Structure', 'Methodology', 'Person', etc. This field helps in classifying and organizing entities within the knowledge graph.")
-    name : str = Field("The specific name of the entity. It should represent a single, distinct concept and must not be an empty string. For example, if the entity is a 'Technique', the name could be 'Neural Networks'.")
+    name : str = Field("The specific name of the entity in 中文. It should represent a single, distinct concept and must not be an empty string. For example, if the entity is a 'Technique', the name could be '网络技术'.")
+    description : str = Field("A brief description of the entity in 中文. This field provides additional information about the entity, including its purpose, function, or characteristics.")
+
     
 class EntitiesExtractor(BaseModel):
     entities : List[Entity] = Field("All the entities presented in the context. The entities should encode ONE concept.")
@@ -133,3 +135,116 @@ class Novel(BaseModel):
     plot_summary: str = Field(description="A brief summary of the overall plot")
     key_plot_points: List[PlotPoint] = Field(description="Key plot points or events in the novel")
     themes: Optional[List[str]] = Field(description="Main themes explored in the novel, e.g., love, revenge, etc.")
+
+# ------------------------- 餐饮产品 ----------------------------#
+# 一、标准类型 (StandardType)
+class STDQuantity(BaseModel):
+    value: int = Field(description="用于表示配料或产品的数量")
+
+class STDUnit(BaseModel):
+    value: str = Field(description="表示数量的度量单位")
+
+class STDTimeDuration(BaseModel):
+    value: str = Field(description="表示时间的持续长度")
+
+class STDStorageMethod(BaseModel):
+    value: str = Field(description="表示原料或产品的储存方法")
+
+class STDDate(BaseModel):
+    value: str = Field(description="表示日期")
+
+class STDTemperature(BaseModel):
+    value: str = Field(description="表示存储或加热的温度")
+
+class STDQuantityRange(BaseModel):
+    value: str = Field(description="表示数量的范围")
+
+# 二、概念类型 (ConceptType)
+class IngredientCategory(BaseModel):
+    name: str = Field(description="配料类别")
+    alias: Optional[str] = Field(None, description="配料分类别名")
+
+class DishCategory(BaseModel):
+    name: str = Field(description="菜品类别")
+    alias: Optional[str] = Field(None, description="菜品分类别名")
+
+class CookingMethod(BaseModel):
+    name: str = Field(description="料理方法")
+    alias: Optional[str] = Field(None, description="烹饪方法别名")
+
+class StorageCondition(BaseModel):
+    name: str = Field(description="存储条件")
+    alias: Optional[str] = Field(None, description="储存条件别名")
+
+class preparationStep(BaseModel):
+    description: str = Field(...,description="制作步骤描述")
+    step: int = Field(..., description="制作步骤序号")
+
+class Seasoning(BaseModel):
+    name: str = Field(description="调味料名称")
+    description: Optional[str] = Field(None, description="调味料描述")
+    usedFor: str = Field(description="用途")
+
+class Equipment(BaseModel):
+    name: str = Field(description="设备名称")
+    description: Optional[str] = Field(None, description="设备描述")
+    type: str = Field(description="类型")
+    usedFor: str = Field(description="用途")
+
+class Storage(BaseModel):
+    name: str = Field(description="存储库名称")
+    description: Optional[str] = Field(None, description="存储库描述")
+    location: str = Field(description="位置")
+    type: str = Field(description="类型")
+
+# 三、实体类型 (EntityType)
+class Ingredient(BaseModel):
+    name: str = Field(..., description="配料名称")
+    description: Optional[str] = Field(None, description="配料描述")
+    state: str = Field(..., description="状态")
+    ingredientCategory: IngredientCategory = Field(None,description="配料类别")
+    quantity: Optional[STDQuantity] = Field(None,description="配料数量")
+    unit: Optional[STDUnit] =  Field(None,description="配料数量单位")
+    storageTime: str = Field(..., description="储存时间")
+    storageMethod: STDStorageMethod = Field(None,description="储存方式")
+
+
+class Product(BaseModel):
+    name: str = Field(...,description="菜品名称")
+    description: Optional[str] = Field(None, description="菜品描述")
+    category: DishCategory = Field(None,description="类别")
+    cookingMethod: CookingMethod = Field(None,description="烹饪方法")
+    ingredients: List[Ingredient] = Field(None,description="配料列表")
+    seasonings: Optional[List[Seasoning]] =  Field(None,description="调料列表")
+    equipments: Optional[List[Equipment]] = Field(None,description="涉及到使用的设备，小器具列表")
+    preparationSteps: Optional[List[preparationStep]] = Field(None, description="制作步骤列表，列表中每个制作步骤的序号不可重复")
+    storageCondition: StorageCondition = Field(None, description="储存条件")
+
+# 四、事件类型 (EventType)
+class ProductPreparationEvent(BaseModel):
+    name: str = Field(description="产品制作事件名称")
+    description: Optional[str] = Field(None, description="产品制作事件描述")
+    time: STDDate = Field(description="时间")
+    location: str = Field(description="地点")
+    behavior: CookingMethod = Field(description="行为")
+    subject: List[Equipment] = Field(description="主体")
+    object: List[Ingredient] = Field(description="客体")
+
+class ProductAssemblyEvent(BaseModel):
+    name: str = Field(description="产品组装事件名称")
+    description: Optional[str] = Field(None, description="产品组装事件描述")
+    time: STDDate = Field(description="时间")
+    location: str = Field(description="地点")
+    behavior: str = Field(description="行为")
+    subject: Product = Field(description="主体")
+    object: List[Ingredient] = Field(description="客体")
+
+class ServingEvent(BaseModel):
+    name: str = Field(description="奉客事件名称")
+    description: Optional[str] = Field(None, description="奉客事件描述")
+    time: STDDate = Field(description="时间")
+    location: str = Field(description="地点")
+    behavior: str = Field(description="行为")
+    subject: Product = Field(description="主体")
+    object: str = Field(description="客体")
+

@@ -35,7 +35,7 @@ class iEntitiesExtractor():
                                       secondary significance in the evaluation process.
         
         Returns:
-            List[Entity]: A list of extracted entities with embeddings.
+            List[Entity]: A list of extracted entities with embeddings.注意：entity name请使用中文名称
         
         Raises:
             ValueError: If entity extraction fails after the specified maximum number of attempts.
@@ -45,7 +45,10 @@ class iEntitiesExtractor():
         entities = None
         IE_query  = '''
         # DIRECTIVES : 
-        - Act like an experienced knowledge graph builder.
+        - Act like an experienced information extractor. 从给定的context上下文中抽取实体. 
+        - If you do not find the right information, keep its place empty.
+        - 请注意：1. 提供的上下文context中任何信息都需要抽取成实体，尽可能详细，不能忽略信息和创造信息。2. 实体名称和类型请使用中文名称 
+        - 实体类型尽可能在： 菜品，制作步骤，配料，存储方式, 注意事项等选项中选择。如果这些选项无法满足语义中，再选择其他实体类型。
         '''
  
         while tries < max_tries:
@@ -68,7 +71,7 @@ class iEntitiesExtractor():
             raise ValueError("Failed to extract entities after multiple attempts.")
 
         print (entities)
-        entities = [Entity(label=entity["label"], name = entity["name"]) 
+        entities = [Entity(label=entity["label"], name = entity["name"], description = entity["description"])
                     for entity in entities["entities"]]
         #print(entities)
         kg = KnowledgeGraph(entities = entities, relationships=[])

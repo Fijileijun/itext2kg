@@ -93,7 +93,7 @@ class GraphIntegrator:
                     value = GraphIntegrator.transform_embeddings_to_str_list(value)
                 properties.append(f'SET n.{prop.replace(" ", "_")} = "{value}"')
 
-            query = f'CREATE (n:{node.label} {{name: "{node.name}"}}) ' + ' '.join(properties)
+            query = f'CREATE (n:{node.label} {{name: "{node.name}", description: "{node.description}"}}) ' + ' '.join(properties)
             queries.append(query)
         return queries
 
