@@ -169,3 +169,5 @@ cython_debug/
 env/
 .vscode/
 .pytest_cache/
+test2kb/
+.idea/
