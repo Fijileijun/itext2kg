@@ -171,3 +171,4 @@ env/
 .pytest_cache/
 test2kb/
 .idea/
+/datasets/dish/
