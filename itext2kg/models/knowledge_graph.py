@@ -20,7 +20,7 @@ class Entity(BaseModel):
     properties:EntityProperties = EntityProperties()
     
     def  process(self):
-        # Replace spaces, dashes, periods, and '&' in names with underscores or 'and'.同时需要支持中文
+        # Replace spaces, dashes, periods, and '&' in names with underscores or 'and'.
         # self.label = re.sub(r'[^a-zA-Z0-9]', '_', self.label).replace("&", "and")
         self.label = re.sub(r'[^\w\u4e00-\u9fff]', '_', self.label).replace("&", "and")
         self.name = self.name.lower().replace("_", " ").replace("-", " ").replace('"', " ").strip()
@@ -54,7 +54,7 @@ class Relationship(BaseModel):
     properties:RelationshipProperties = RelationshipProperties()
     
     def process(self):
-        # Replace spaces, dashes, periods, and '&' in names with underscores or 'and'.同时需要支持中文
+        # Replace spaces, dashes, periods, and '&' in names with underscores or 'and'.
         # self.name = re.sub(r'[^a-zA-Z0-9]', '_', self.name).replace("&", "and")
         self.name = re.sub(r'[^\w\u4e00-\u9fff]', '_', self.name).replace("&", "and")
             
