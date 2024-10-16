@@ -16,11 +16,13 @@ class RelationshipProperties(BaseModel):
 class Entity(BaseModel):
     label:str = ""
     name:str = ""
+    description:str = ""
     properties:EntityProperties = EntityProperties()
     
-    def process(self):
-        # Replace spaces, dashes, periods, and '&' in names with underscores or 'and'.
-        self.label = re.sub(r'[^a-zA-Z0-9]', '_', self.label).replace("&", "and")
+    def  process(self):
+        # Replace spaces, dashes, periods, and '&' in names with underscores or 'and'.同时需要支持中文
+        # self.label = re.sub(r'[^a-zA-Z0-9]', '_', self.label).replace("&", "and")
+        self.label = re.sub(r'[^\w\u4e00-\u9fff]', '_', self.label).replace("&", "and")
         self.name = self.name.lower().replace("_", " ").replace("-", " ").replace('"', " ").strip()
     
     def embed_Entity(self,
@@ -52,8 +54,9 @@ class Relationship(BaseModel):
     properties:RelationshipProperties = RelationshipProperties()
     
     def process(self):
-        # Replace spaces, dashes, periods, and '&' in names with underscores or 'and'.
-        self.name = re.sub(r'[^a-zA-Z0-9]', '_', self.name).replace("&", "and")
+        # Replace spaces, dashes, periods, and '&' in names with underscores or 'and'.同时需要支持中文
+        # self.name = re.sub(r'[^a-zA-Z0-9]', '_', self.name).replace("&", "and")
+        self.name = re.sub(r'[^\w\u4e00-\u9fff]', '_', self.name).replace("&", "and")
             
     def embed_relationship(self, embeddings_function:Callable[[str], np.array]):
         self.process()
@@ -83,8 +86,8 @@ class KnowledgeGraph(BaseModel):
                        entity_name_weight:float=0.6,
                        entity_label_weight:float=0.4)-> None:
         self.remove_duplicates_entities()
-        for Entity in self.entities:
-            Entity.process()
+        for entity in self.entities:
+            entity.process()
         entities_embeddings = (
             entity_label_weight * embeddings_function([Entity.label for Entity in self.entities]) 
             +  
