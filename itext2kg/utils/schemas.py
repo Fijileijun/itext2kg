@@ -166,15 +166,12 @@ class IngredientCategory(BaseModel):
 
 class DishCategory(BaseModel):
     name: str = Field(description="菜品类别")
-    alias: Optional[str] = Field(None, description="菜品分类别名")
 
 class CookingMethod(BaseModel):
     name: str = Field(description="料理方法")
-    alias: Optional[str] = Field(None, description="烹饪方法别名")
 
 class StorageCondition(BaseModel):
     name: str = Field(description="存储条件")
-    alias: Optional[str] = Field(None, description="储存条件别名")
 
 class preparationStep(BaseModel):
     description: str = Field(...,description="制作步骤描述")
